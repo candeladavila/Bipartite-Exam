@@ -9,7 +9,10 @@ package org.uma.ed.exam;
 
 import org.uma.ed.datastructures.dictionary.Dictionary;
 import org.uma.ed.datastructures.dictionary.JDKHashDictionary;
+import org.uma.ed.datastructures.graph.DictionaryGraph;
 import org.uma.ed.datastructures.graph.Graph;
+import org.uma.ed.datastructures.set.JDKHashSet;
+import org.uma.ed.datastructures.set.Set;
 import org.uma.ed.datastructures.stack.JDKStack;
 import org.uma.ed.datastructures.stack.Stack;
 
@@ -43,8 +46,46 @@ public class BipartiteExam<V> {
   }
 
   public BipartiteExam(Graph<V> graph) {
-    // the algorithm must be implemented here
-    throw new UnsupportedOperationException("To be implemented");
+    this.bipartite = true; //inicializamos el booleano a true
+    this.assignedColor = new JDKHashDictionary<>(); //creamos un nuevo diccionario Hash (nos dan la clase en el enunciado)
+    Color color; //creamos una variable "color" para llevar un registro del color que usamos
+
+    //Condición inicial → si un grafo está vacío entonces es bipartito
+    if(graph.isEmpty()){
+      return;
+    }
+
+    //inicializamos la pila desde un nodo arbitrario del grafo
+    Stack<Pair<V>> pila = new JDKStack<>();
+    V source = graph.vertices().iterator().next();
+    Pair<V> pair = new Pair<>(source, Color.Red);  //creamos una variable pareja que usaremos para ir añadiendo los pares de valores
+    pila.push(pair); //añadimos el primer nodo al stack
+
+    //Bucle while para ir iterando sobre los nodos del grafo
+    while (bipartite && !pila.isEmpty()){
+      //quitamos la primera pareja del stack y guardamos los valores de sus variables
+      pair = pila.top();
+      pila.pop();
+      color = pair.color;
+      source = pair.vertex;
+
+      if(!assignedColor.isDefinedAt(source)){
+        assignedColor.insert(source, color); //si no está definido en el diccionario lo añadimos
+
+        for(V successor : graph.successors(source)){ //iteramos sobre los nodos adyacentes al nodo que estamos analizando
+          if(!assignedColor.isDefinedAt(successor)){
+            pila.push(Pair.of(successor, color.opposite())); //si no se encuentra en el diccionario lo añadimos al stack
+          } else if(assignedColor.valueOf(successor) != color.opposite()){ //si el color de los hijos no es el opuesto al nodo fuente → false
+            bipartite = false;
+            return;
+          }
+        }
+      }
+      else if(color != assignedColor.valueOf(source)){ //si el nodo ya se encuentra en el diccionario y el color que le tocaría no coincide con el que tiene entonces no es bipartito
+          bipartite = false;
+          return;
+      }
+    }
   }
 
   public boolean isBipartite() {
