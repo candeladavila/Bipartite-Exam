@@ -47,7 +47,8 @@ public class BipartiteExam<V> {
 
   public BipartiteExam(Graph<V> graph) {
     this.bipartite = true; //inicializamos el booleano a true
-    this.assignedColor = new JDKHashDictionary<>(); //creamos un nuevo diccionario Hash (nos dan la clase en el enunciado)
+    //creamos un nuevo diccionario Hash (nos dan la clase en el enunciado)
+    this.assignedColor = new JDKHashDictionary<>();
     Color color; //creamos una variable "color" para llevar un registro del color que usamos
 
     //Condición inicial → si un grafo está vacío entonces es bipartito
@@ -58,7 +59,8 @@ public class BipartiteExam<V> {
     //inicializamos la pila desde un nodo arbitrario del grafo
     Stack<Pair<V>> pila = new JDKStack<>();
     V source = graph.vertices().iterator().next();
-    Pair<V> pair = new Pair<>(source, Color.Red);  //creamos una variable pareja que usaremos para ir añadiendo los pares de valores
+    //creamos una variable pareja que usaremos para ir añadiendo los pares de valores
+    Pair<V> pair = new Pair<>(source, Color.Red);
     pila.push(pair); //añadimos el primer nodo al stack
 
     //Bucle while para ir iterando sobre los nodos del grafo
@@ -71,17 +73,21 @@ public class BipartiteExam<V> {
 
       if(!assignedColor.isDefinedAt(source)){
         assignedColor.insert(source, color); //si no está definido en el diccionario lo añadimos
-
-        for(V successor : graph.successors(source)){ //iteramos sobre los nodos adyacentes al nodo que estamos analizando
+        //iteramos sobre los nodos adyacentes al nodo que estamos analizando
+        for(V successor : graph.successors(source)){
           if(!assignedColor.isDefinedAt(successor)){
-            pila.push(Pair.of(successor, color.opposite())); //si no se encuentra en el diccionario lo añadimos al stack
-          } else if(assignedColor.valueOf(successor) != color.opposite()){ //si el color de los hijos no es el opuesto al nodo fuente → false
+            //si no se encuentra en el diccionario lo añadimos al stack
+            pila.push(Pair.of(successor, color.opposite()));
+            //si el color de los hijos no es el opuesto al nodo fuente → false
+          } else if(assignedColor.valueOf(successor) != color.opposite()){
             bipartite = false;
             return;
           }
         }
       }
-      else if(color != assignedColor.valueOf(source)){ //si el nodo ya se encuentra en el diccionario y el color que le tocaría no coincide con el que tiene entonces no es bipartito
+      //si el nodo ya se encuentra en el diccionario y el color que le tocaría no coincide con el que tiene
+      // entonces no es bipartito
+      else if(color != assignedColor.valueOf(source)){
           bipartite = false;
           return;
       }
